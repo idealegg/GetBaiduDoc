@@ -11,6 +11,15 @@ import sys
 import pprint
 import time
 import urllib2
+import StringIO
+#import HTMLParser
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.pdfgen import canvas
+from PIL import Image as image
+import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.poolmanager import PoolManager
+import ssl
 
 
 count_class = "page-count"
@@ -80,12 +89,12 @@ def getPages(bf, pageList, docType):
     pages = bf.find_all('div', class_=text_class) # 'ie-fix'
   elif docType ==  "img":
     pages = bf.find_all('img', class_=img_class) # 'reader-pptstyle'
-  #print "pages: %d\n" % len(pages)
+  print "pages: %d\n" % len(pages)
   for page in pages:
     pageNo = int(page.find_parents(id=page_pattern).pop().attrs['id'].split("-")[1])
-    #print "pageNo: %d\n" % pageNo
-    #print "pageList[pageNo-1]\n"
-    #pprint.pprint(pageList[pageNo-1])
+    print "pageNo: %d\n" % pageNo
+    print "pageList[pageNo-1]\n"
+    pprint.pprint(pageList[pageNo-1])
     if pageList[pageNo-1]:
       continue
     if docType ==  "text":
@@ -97,26 +106,40 @@ def getPages(bf, pageList, docType):
       #print "texts_list: %d\n" % len(texts_list)
       pageList[pageNo-1] = texts_list
     elif docType ==  "img":
-      pageList[pageNo-1] = page.attr('src')
+      pageList[pageNo-1] = page.attrs['src']
   return pageList
   
 def getDocType(bf):
   isText = bf.find_all('div', class_=text_class) # 'ie-fix'
   if len(isText):
     return "text"
-  isImg = bf.find_all('div', class_=img_class) # 'reader-pptstyle'
+  isImg = bf.find_all('img', class_=img_class) # 'reader-pptstyle'
   if len(isImg):
     return "img"
   return ""
 
-if __name__ == "__main__":
-  if len(sys.argv) != 2:
-    print "Usage: %s <url>\n" % os.path.basename(sys.argv[0])
-    exit(1)
-  # url = 'https://wenku.baidu.com/view/aa31a84bcf84b9d528ea7a2c.html'
-  # url = 'https://wenku.baidu.com/view/590424de846a561252d380eb6294dd88d0d23d0b.html'
-  driver = init_driver()
-  putUrl(driver, sys.argv[1])
+def getUrlData(url):
+  request = urllib2.Request(url)
+  response = urllib2.urlopen(request)
+  return response.read()
+
+
+class MyAdapter(HTTPAdapter):
+    def init_poolmanager(self, connections, maxsize, block=False):
+        self.poolmanager = PoolManager(num_pools=connections,
+                                       maxsize=maxsize,
+                                       block=block,
+                                       ssl_version=ssl.PROTOCOL_TLSv1)
+
+
+def getUrlData2(url):
+  s = requests.Session()
+  s.mount('https://', MyAdapter())
+  response = s.get(url)
+  return  response.content
+
+def main(driver, url):
+  putUrl(driver, url)
   display_all_doc(driver)
   bf = getBf(driver)
   docType = getDocType(bf)
@@ -165,11 +188,53 @@ if __name__ == "__main__":
     f.write('\n\n')
     f.close()
   elif docType ==  "img":
-    #mkdir
+    ratio = 1.2
+    quality = 40
+    #hp = HTMLParser.HTMLParser()
+    if title:
+      f_pdf = title + '.pdf'
+    else:
+      f_pdf = "ppt%d.pdf" % os.getpid()
+    (w, h) = landscape(A4)
+    c = canvas.Canvas(f_pdf, pagesize = landscape(A4))
+    i = 1
     for page in pageList:
-      request = urllib2.Request(url=page)
-      response = urllib2.urlopen(request)
-      data = response.read().decode('utf-8', 'replace')
-      f = open('cat_500_600.jpg','wb')
-      f.write(data)
-      f.close()
+      if not page:
+        print "This page [%d] could be skipped just now!" % i
+        print "Re open again.\n"
+        inputPage(driver, i)
+        bf = getBf(driver)
+        pageList = getPages(bf, pageList)
+        page = pageList[i-1]
+      if not page:
+        print "This page [%d] truly is lost.\n" % i
+        page = ""
+      else:
+        #url = hp.unescape(url)
+        data = getUrlData2(page)
+        im=image.open(StringIO.StringIO(data))
+        (ori_w,ori_h) = im.size
+        im1 = im.resize((int(ori_w/ratio), int(ori_h/ratio)), image.ANTIALIAS)
+        tmpf = "tmp%d_%d.jpg" % (os.getpid(), i)
+        im1.save(tmpf, format="jpeg", quality=quality, optimize=True)
+        c.drawImage(tmpf, 0, 0, w, h)
+        os.remove(tmpf)
+        c.showPage()
+        im.close()
+        im1.close()
+      i = i + 1
+    c.save()
+    
+if __name__ == "__main__":
+  if len(sys.argv) != 2:
+    print "Usage: %s <url>\n" % os.path.basename(sys.argv[0])
+    exit(1)
+  # url = 'https://wenku.baidu.com/view/aa31a84bcf84b9d528ea7a2c.html'
+  # url = 'https://wenku.baidu.com/view/590424de846a561252d380eb6294dd88d0d23d0b.html'
+  driver = init_driver()
+  try:
+    main(driver, sys.argv[1])
+  except Exception, e:
+    raise
+  finally:
+    driver.quit()
