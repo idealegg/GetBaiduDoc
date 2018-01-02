@@ -1,0 +1,145 @@
+E:\Python27\python.exe "E:\Program Files (x86)\JetBrains\PyCharm 2016.1\helpers\pydev\pydevd.py" --multiproc --qt-support --client 127.0.0.1 --port 62088 --file D:/pycharmProject/GetBaiduDoc/test2.py install postgresql -vvv
+pydev debugger: process 14504 is connecting
+
+Connected to pydev debugger (build 145.260)
+Config variable 'Py_DEBUG' is unset, Python ABI tag may be incorrect
+Config variable 'WITH_PYMALLOC' is unset, Python ABI tag may be incorrect
+Config variable 'Py_UNICODE_SIZE' is unset, Python ABI tag may be incorrect
+Collecting postgresql
+  1 location(s) to search for versions of postgresql:
+  * https://pypi.python.org/simple/postgresql/
+  Getting page https://pypi.python.org/simple/postgresql/
+  Looking up "https://pypi.python.org/simple/postgresql/" in the cache
+  No cache entry available
+  Starting new HTTPS connection (1): pypi.python.org
+  huangd
+  Traceback (most recent call last):
+    File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\util\ssl_.py", line 292, in ssl_wrap_socket
+      raise Exception("huangd")
+  Exception: huangd
+Traceback (most recent call last):
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\util\ssl_.py", line 292, in ssl_wrap_socket
+    raise Exception("huangd")
+Exception: huangd
+
+Cleaning up...
+Exception:
+Traceback (most recent call last):
+  File "E:\Python27\lib\site-packages\pip\basecommand.py", line 215, in main
+    status = self.run(options, args)
+  File "E:\Python27\lib\site-packages\pip\commands\install.py", line 324, in run
+    requirement_set.prepare_files(finder)
+  File "E:\Python27\lib\site-packages\pip\req\req_set.py", line 380, in prepare_files
+    ignore_dependencies=self.ignore_dependencies))
+  File "E:\Python27\lib\site-packages\pip\req\req_set.py", line 554, in _prepare_file
+    require_hashes
+  File "E:\Python27\lib\site-packages\pip\req\req_install.py", line 278, in populate_link
+    self.link = finder.find_requirement(self, upgrade)
+  File "E:\Python27\lib\site-packages\pip\index.py", line 465, in find_requirement
+    all_candidates = self.find_all_candidates(req.name)
+  File "E:\Python27\lib\site-packages\pip\index.py", line 423, in find_all_candidates
+    for page in self._get_pages(url_locations, project_name):
+  File "E:\Python27\lib\site-packages\pip\index.py", line 568, in _get_pages
+    page = self._get_page(location)
+  File "E:\Python27\lib\site-packages\pip\index.py", line 683, in _get_page
+    return HTMLPage.get_page(link, session=self.session)
+  File "E:\Python27\lib\site-packages\pip\index.py", line 792, in get_page
+    "Cache-Control": "max-age=600",
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\sessions.py", line 488, in get
+    return self.request('GET', url, **kwargs)
+  File "E:\Python27\lib\site-packages\pip\download.py", line 386, in request
+    return super(PipSession, self).request(method, url, *args, **kwargs)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\sessions.py", line 475, in request
+    resp = self.send(prep, **send_kwargs)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\sessions.py", line 596, in send
+    r = adapter.send(request, **kwargs)
+  File "E:\Python27\lib\site-packages\pip\_vendor\cachecontrol\adapter.py", line 47, in send
+    resp = super(CacheControlAdapter, self).send(request, **kw)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\adapters.py", line 423, in send
+    timeout=timeout
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\connectionpool.py", line 595, in urlopen
+    chunked=chunked)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\connectionpool.py", line 352, in _make_request
+    self._validate_conn(conn)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\connectionpool.py", line 831, in _validate_conn
+    conn.connect()
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\connection.py", line 289, in connect
+    ssl_version=resolved_ssl_version)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\util\ssl_.py", line 292, in ssl_wrap_socket
+    raise Exception("huangd")
+Exception: huangd
+Looking up "https://pypi.python.org/pypi/pip/json" in the cache
+No cache entry available
+Starting new HTTPS connection (1): pypi.python.org
+Traceback (most recent call last):
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\util\ssl_.py", line 292, in ssl_wrap_socket
+    raise Exception("huangd")
+Exception: huangd
+
+There was an error checking the latest version of pip
+Traceback (most recent call last):
+  File "E:\Python27\lib\site-packages\pip\utils\outdated.py", line 126, in pip_version_check
+    headers={"Accept": "application/json"},
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\sessions.py", line 488, in get
+    return self.request('GET', url, **kwargs)
+  File "E:\Python27\lib\site-packages\pip\download.py", line 386, in request
+    return super(PipSession, self).request(method, url, *args, **kwargs)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\sessions.py", line 475, in request
+    resp = self.send(prep, **send_kwargs)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\sessions.py", line 596, in send
+    r = adapter.send(request, **kwargs)
+  File "E:\Python27\lib\site-packages\pip\_vendor\cachecontrol\adapter.py", line 47, in send
+    resp = super(CacheControlAdapter, self).send(request, **kw)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\adapters.py", line 423, in send
+    timeout=timeout
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\connectionpool.py", line 595, in urlopen
+    chunked=chunked)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\connectionpool.py", line 352, in _make_request
+    self._validate_conn(conn)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\connectionpool.py", line 831, in _validate_conn
+    conn.connect()
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\connection.py", line 289, in connect
+    ssl_version=resolved_ssl_version)
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\util\ssl_.py", line 292, in ssl_wrap_socket
+    raise Exception("huangd")
+Exception: huangd
+huangd
+Traceback (most recent call last):
+  File "E:\Python27\lib\site-packages\pip\_vendor\requests\packages\urllib3\util\ssl_.py", line 292, in ssl_wrap_socket
+    raise Exception("huangd")
+Exception: huangd
+
+Process finished with exit code 2
+
+
+
+E:\Python27\Lib\ssl.py:663
+    def getpeercert(self, binary_form=False):
+        """Returns a formatted version of the data in the
+        certificate provided by the other end of the SSL channel.
+        Return None if no certificate was provided, {} if a
+        certificate was provided, but not validated."""
+
+        self._checkClosed()
+        self._check_connected()
+        return self._sslobj.peer_certificate(binary_form)
+        
+        
+        
+        if (ca_certs or ca_cert_dir) and cert_reqs is None:
+            cert_reqs = 'CERT_REQUIRED'
+            
+            
+E:\Python27\Lib\site-packages\pip\_vendor\requests\adapters.py:392
+        conn = self.get_connection(request.url, proxies)
+
+        self.cert_verify(conn, request.url, verify, cert)
+        
+E:\Python27\Lib\site-packages\pip\_vendor\requests\certs.py   
+DEFAULT_CA_BUNDLE_PATH   
+    def where():
+        """Return the preferred certificate bundle."""
+        # vendored bundle inside Requests
+        return os.path.join(os.path.dirname(__file__), 'cacert.pem')
+        
+   'E:\\Python27\\lib\\site-packages\\certifi\\cacert.pem'
