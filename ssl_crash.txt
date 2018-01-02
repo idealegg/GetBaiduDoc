@@ -1,0 +1,31 @@
+
+<type 'tuple'>: ('User-agent', 'Python-urllib/2.7')
+
+header
+
+<type 'tuple'>: (8, u'EOF occurred in violation of protocol (_ssl.c:590)')
+
+Connected to pydev debugger (build 145.260)
+Traceback (most recent call last):
+  File "E:\Program Files (x86)\JetBrains\PyCharm 2016.1\helpers\pydev\pydevd.py", line 1530, in <module>
+    globals = debugger.run(setup['file'], None, None, is_module)
+  File "E:\Program Files (x86)\JetBrains\PyCharm 2016.1\helpers\pydev\pydevd.py", line 937, in run
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+  File "D:/pycharmProject/GetBaiduDoc/test.py", line 14, in <module>
+    response = urllib2.urlopen(request)
+  File "E:\Python27\lib\urllib2.py", line 154, in urlopen
+    return opener.open(url, data, timeout)
+  File "E:\Python27\lib\urllib2.py", line 429, in open
+    response = self._open(req, data)
+  File "E:\Python27\lib\urllib2.py", line 447, in _open
+    '_open', req)
+  File "E:\Python27\lib\urllib2.py", line 407, in _call_chain
+    result = func(*args)
+  File "E:\Python27\lib\urllib2.py", line 1241, in https_open
+    context=self._context)
+  File "E:\Python27\lib\urllib2.py", line 1198, in do_open
+    raise URLError(err)
+urllib2.URLError: <urlopen error EOF occurred in violation of protocol (_ssl.c:590)>
+
+
+phantomjs

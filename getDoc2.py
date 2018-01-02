@@ -136,6 +136,8 @@ def getUrlData2(url):
   s = requests.Session()
   s.mount('https://', MyAdapter())
   response = s.get(url)
+  response.close()
+  s.close()
   return  response.content
 
 def main(driver, url):
@@ -176,7 +178,7 @@ def main(driver, url):
         print "Re open again.\n"
         inputPage(driver, i)
         bf = getBf(driver)
-        pageList = getPages(bf, pageList)
+        pageList = getPages(bf, pageList, docType)
         page = pageList[i-1]
       if not page:
         print "This page [%d] truly is an empty page.\n" % i
@@ -204,7 +206,7 @@ def main(driver, url):
         print "Re open again.\n"
         inputPage(driver, i)
         bf = getBf(driver)
-        pageList = getPages(bf, pageList)
+        pageList = getPages(bf, pageList, docType)
         page = pageList[i-1]
       if not page:
         print "This page [%d] truly is lost.\n" % i
