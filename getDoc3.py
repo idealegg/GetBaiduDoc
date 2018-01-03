@@ -217,6 +217,7 @@ def main(driver, url):
     f.writelines(contents)
     f.write('\n\n')
     f.close()
+    return filename
   elif docType ==  "img":
     ratio = 1.2
     quality = 40
@@ -258,6 +259,7 @@ def main(driver, url):
       i = i + 1
     c.save()
     s.close()
+    return f_pdf
     
 if __name__ == "__main__":
   #if len(sys.argv) != 2:
@@ -267,12 +269,13 @@ if __name__ == "__main__":
   print "Please input the URL:\n"
   url = sys.stdin.readline()
   url = url[:-1]
+  docname = ""
   # url = 'https://wenku.baidu.com/view/aa31a84bcf84b9d528ea7a2c.html'
   # url = 'https://wenku.baidu.com/view/590424de846a561252d380eb6294dd88d0d23d0b.html'
   driver = init_driver()
   try:
     #main(driver, sys.argv[1])
-    main(driver, url)
+    docname = main(driver, url)
   except Exception, e:
     success = False
     raise
@@ -281,5 +284,5 @@ if __name__ == "__main__":
     errfile = "err.log_%d" % os.getpid()
     if os.path.isfile(errfile):
       os.remove(errfile)
-    print "Get Baidu Doc %s!\n" %("successfully" if success else "failed")
+    print "Get Baidu Doc '%s' %s!\n" %(docname, "successfully" if success else "failed")
     os.system("pause")
