@@ -23,7 +23,9 @@ import ssl
 
 
 count_class = "page-count"
+count_class_ppt = "total-page'"
 input_class = "page-input"
+input_class_ppt = "current-page"
 title_class = "reader_ab_test with-top-banner"
 text_class = 'ie-fix'
 img_class = 'reader-pptstyle'
@@ -46,7 +48,9 @@ def init_driver():
     "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36"
   )
   return webdriver.PhantomJS(executable_path='phantomjs-2.1.1-windows\\bin\\phantomjs.exe',
-                             service_args=['--load-images=false', '--disk-cache=true'], desired_capabilities=dcap)  # 加载网址
+                             service_args=['--load-images=false',
+                                           '--disk-cache=true'],
+                             desired_capabilities=dcap)  # 加载网址
   #options = webdriver.ChromeOptions()
   #options.add_argument('user-agent="Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36"')
   #return webdriver.Chrome(chrome_options=options)
@@ -75,20 +79,24 @@ def getBf(driver):
   return BeautifulSoup(driver.page_source.encode(encodes), file_parser, from_encoding=encodes)
 
 
-def getCount(bf):
+def getCount(bf, dtype):
   '''
   获取页数
+  # 'page-count'/'total-page'
   '''
-  count_tags = bf.find_all('span', class_=count_class) # 'page-count'
+  count_tags = bf.find_all('span', class_=count_class if dtype != "ppt" else count_class_ppt)
   return int(count_tags.pop().get_text().split("/")[1])
 
 
 def inputPage(driver, page):
-   #print "inputPage: %d\n" %page
-   page_input = driver.find_element_by_class_name(input_class)
-   page_str = "%d" % page
-   page_input.send_keys("".join([Keys.BACKSPACE * len(page_str), page_str, Keys.ENTER]))
-   time.sleep(1.5)
+  '''
+  # 'page-input'/'current-page'
+  '''
+  #print "inputPage: %d\n" %page
+  page_input = driver.find_element_by_class_name(input_class)
+  page_str = "%d" % page
+  page_input.send_keys("".join([Keys.BACKSPACE * len(page_str), page_str, Keys.ENTER]))
+  time.sleep(1.5)
 
 
 def getTitle(bf):

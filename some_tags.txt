@@ -6,8 +6,17 @@
 
 <span id="pageNum-4-relate" class="current-page">1</span><span class="tail-info">/2</span>
 
+<div class="centerLeft"><div class="ipt-box" style="left: 498px;">
     <label><input type="text" value="1" class="current-page" js-hook="toolbar-ipt" style="width: 42px;padding-right: 2px;margin-right: 2px;text-align: right"></label>
     <span class="total-page">/&nbsp;9</span>
+</div></div>
+
+
+<div class="centerLeft"><div class="reader-tools-page xllDownloadLayerHit_left"><input type="text" class="page-input" data-toolsbar-log="jumppage"><span class="page-count">/47</span>
+
+<div class="centerLeft"><div class="reader-tools-page xllDownloadLayerHit_left"><input type="text" class="page-input" data-toolsbar-log="jumppage"><span class="page-count">/15</span><
+
+
     
     
     <b class="ic ic-ppt"></b>
