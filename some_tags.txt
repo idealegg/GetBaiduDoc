@@ -1,0 +1,17 @@
+<img src="https://wkretype.bdimg.com/retype/zoom/ec8ca61c4a7302768e993989?pn=8&amp;o=jpg_6&amp;md5sum=8a209f37152824caa156ee3de796fa7b&amp;sign=512cf9d514&amp;png=794909-878816&amp;jpg=947702-1139829" style="width: 932px; height: 524px; opacity: 1;">
+
+<a js-hook="knob" href="###" class="ui-knob" style="left: 39.3319%; top: 0px;"></a>
+
+<div class="ui-thumbs-content" js-hook="thumbs-content">第5页</div>
+
+<span id="pageNum-4-relate" class="current-page">1</span><span class="tail-info">/2</span>
+
+    <label><input type="text" value="1" class="current-page" js-hook="toolbar-ipt" style="width: 42px;padding-right: 2px;margin-right: 2px;text-align: right"></label>
+    <span class="total-page">/&nbsp;9</span>
+    
+    
+    <b class="ic ic-ppt"></b>
+    <b class="ic ic-doc"></b>
+    <b class="ic ic-pdf"></b>
+    
+ https://wenku.baidu.com/view/a6d77180bcd126fff7050bff.html
