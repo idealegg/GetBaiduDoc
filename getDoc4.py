@@ -4,6 +4,7 @@
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from bs4 import BeautifulSoup
 import re
@@ -18,12 +19,12 @@ from reportlab.lib.pagesizes import A4, landscape
 from reportlab.pdfgen import canvas
 from PIL import Image as image
 import requests
-from requests.adapters import HTTPAdapter
-import ssl
 
 
 count_class = "page-count"
-count_class_ppt = "total-page'"
+count_class_ppt = "total-page"
+center_left = "centerLeft"
+ppt_class = 'mod ppt-mod'
 input_class = "page-input"
 input_class_ppt = "current-page"
 title_class = "reader_ab_test with-top-banner"
@@ -35,9 +36,10 @@ file_parser = 'html.parser'
 
 page_pattern = re.compile("pageNo-\d+")
 
-supported_type = (doc, pdf, ppt)
+supported_type = ('doc', 'pdf', 'ppt')
 
-def init_driver():
+
+def init_driver(load_images=False):
   '''
   ***selenium 自动操作网页***
   #设置设备代理
@@ -48,7 +50,7 @@ def init_driver():
     "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36"
   )
   return webdriver.PhantomJS(executable_path='phantomjs-2.1.1-windows\\bin\\phantomjs.exe',
-                             service_args=['--load-images=false',
+                             service_args=[''.join(['--load-images=', 'true' if load_images else 'false']),
                                            '--disk-cache=true'],
                              desired_capabilities=dcap)  # 加载网址
   #options = webdriver.ChromeOptions()
@@ -58,7 +60,9 @@ def init_driver():
 
 def putUrl(driver, url):
   driver.set_window_size(1124, 850)
+  print "Loading page..."
   driver.get(url)    #此处填写文章地址
+  print "Loaded page..."
 
 
 def display_all_doc(driver):
@@ -79,23 +83,31 @@ def getBf(driver):
   return BeautifulSoup(driver.page_source.encode(encodes), file_parser, from_encoding=encodes)
 
 
-def getCount(bf, dtype):
+def getCount(bf, doc_type):
   '''
   获取页数
   # 'page-count'/'total-page'
   '''
-  count_tags = bf.find_all('span', class_=count_class if dtype != "ppt" else count_class_ppt)
+  count_tags = bf.find_all('span', class_=count_class if doc_type != "ppt" else count_class_ppt)
   return int(count_tags.pop().get_text().split("/")[1])
 
 
-def inputPage(driver, page):
+def inputPage(driver, page, count):
   '''
   # 'page-input'/'current-page'
   '''
   #print "inputPage: %d\n" %page
-  page_input = driver.find_element_by_class_name(input_class)
+  c_left = driver.find_element_by_class_name(center_left)
+  try:
+    page_input = c_left.find_element_by_class_name(input_class)
+  except NoSuchElementException:
+    page_input = c_left.find_element_by_class_name(input_class_ppt)
   page_str = "%d" % page
-  page_input.send_keys("".join([Keys.BACKSPACE * len(page_str), page_str, Keys.ENTER]))
+  page_input.clear()
+  if page_input.get_attribute('value'):
+    page_input.clear()
+  # page_input.send_keys("".join([Keys.BACKSPACE * len(str(count)), page_str, Keys.ENTER]))
+  page_input.send_keys("".join([page_str, Keys.ENTER]))
   time.sleep(1.5)
 
 
@@ -103,37 +115,43 @@ def getTitle(bf):
   '''
   获得文章标题
   '''
-  titles = bf.find_all('h1', class_=title_class) # 'reader_ab_test with-top-banner'
-  title = titles.index[0].find('span').get_text()
-  dtype = titles.index[0].find('b').attrs['class'].split('-')[1]
+  header = bf.find('h1', class_=title_class) # 'reader_ab_test with-top-banner'
+  title = header.find('span').get_text()
+  dtype = header.find('b').attrs['class'][1].split('-')[1]
   return title, dtype
 
 
-def getPages(bf, pageList, docType, count):
-  pageNo = 0
-  if docType ==  "text":
+def getPages(bf, pageList, docType, count, ppt_page):
+  page_no = 0
+  if docType == "doc":
     pages = bf.find_all('div', class_=text_class) # 'ie-fix'
-  elif docType ==  "img":
+  elif docType == "pdf":
     pages = bf.find_all('img', class_=img_class) # 'reader-pptstyle'
+  elif docType == "ppt":
+    mod_class = bf.find('div', class_=ppt_class) # 'mod ppt-mod'
+    print "Analysing page No.: %d/%d" % (ppt_page, count)
+    pageList[ppt_page - 1] = mod_class.find('img').attrs['src']
+    return pageList
   #print "pages: %d\n" % len(pages)
   for page in pages:
-    pageNo = int(page.find_parents(id=page_pattern).pop().attrs['id'].split("-")[1])
-    print "Analysing pageNo: %d/%d\n" % (pageNo, count)
-    #print "pageList[pageNo-1]\n"
-    #pprint.pprint(pageList[pageNo-1])
-    if pageList[pageNo-1]:
+    page_no = int(page.find_parents(id=page_pattern).pop().attrs['id'].split("-")[1])
+    print "Analysing page No.: %d/%d" % (page_no, count)
+    #print "pageList[page_no-1]\n"
+    #pprint.pprint(pageList[page_no-1])
+    if pageList[page_no-1]:
       continue
-    if docType ==  "text":
+    if docType == "doc":
       texts_list = []
       texts = page.find_all('p')
       #print "texts: %d\n" % len(texts)
       for text in texts:
         texts_list.append(text.string.encode('utf8'))
       #print "texts_list: %d\n" % len(texts_list)
-      pageList[pageNo-1] = texts_list
-    elif docType ==  "img":
-      pageList[pageNo-1] = page.attrs['src']
+      pageList[page_no-1] = texts_list
+    elif docType == "pdf":
+      pageList[page_no-1] = page.attrs['src']
   return pageList
+
 
 def getUrlData(url):
   ishttp = url.lower().startswith('https')
@@ -160,22 +178,31 @@ def main(driver, url):
   putUrl(driver, url)
   bf = getBf(driver)
   title, docType = getTitle(bf)
-  print "title: %s\n" % title
-  print "docType: %s\n" % docType
+  print "title: %s" % title
+  print "docType: %s" % docType
   if not docType in supported_type:
-    raise Exception( "Unsupported doc type!")
+    raise Exception("Unsupported doc type!")
   if docType in supported_type[:-1]:
     display_all_doc(driver)
-  count = getCount(bf)
-  print "Pages: %d\n" % count
-
-  pageList = [0] * count
-  it_range = range(1, count+1, 3)
-  it_range.append(count)
-  for i in it_range:
-    inputPage(driver, i)
+  elif docType == "ppt":
+    print "Reopening browser"
+    driver.close()
+    driver.quit()
+    driver = init_driver(True)
+    putUrl(driver, url)
     bf = getBf(driver)
-    pageList = getPages(bf, pageList, docType, count)
+  count = getCount(bf, docType)
+  print "Pages: %d" % count
+  pageList = [0] * count
+  if docType != "ppt":
+    it_range = range(1, count+1, 3)
+    it_range.append(count)
+  else:
+    it_range = range(1, count+1)
+  for i in it_range:
+    inputPage(driver, i, count)
+    bf = getBf(driver)
+    pageList = getPages(bf, pageList, docType, count, i)
   if title:
     filename = title + '.txt'
   else:
@@ -185,20 +212,20 @@ def main(driver, url):
   #f1.write('\n\n')
   #f1.close()
 
-  if docType ==  "text":
+  if docType == "doc":
     contents = []
     i = 1
     for page in pageList:
-      print "Assembling %d/%d\n" %(i, count)
+      print "Assembling %d/%d" %(i, count)
       if not page:
         print "This page [%d] could be an empty page or skipped just now!" % i
-        print "Re open again.\n"
-        inputPage(driver, i)
+        print "Re open again."
+        inputPage(driver, i, count)
         bf = getBf(driver)
-        pageList = getPages(bf, pageList, docType, count)
+        pageList = getPages(bf, pageList, docType, count, i)
         page = pageList[i-1]
       if not page:
-        print "This page [%d] truly is an empty page.\n" % i
+        print "This page [%d] truly is an empty page." % i
         page = []
       contents.extend(page)
       i += 1
@@ -207,7 +234,7 @@ def main(driver, url):
     f.write('\n\n')
     f.close()
     return filename
-  elif docType ==  "img":
+  elif docType in supported_type[1:]:
     ratio = 1.2
     quality = 40
     #hp = HTMLParser.HTMLParser()
@@ -219,16 +246,16 @@ def main(driver, url):
     c = canvas.Canvas(f_pdf, pagesize = landscape(A4))
     i = 1
     for page in pageList:
-      print "Assembling %d/%d\n" % (i, count)
+      print "Assembling %d/%d" % (i, count)
       if not page:
         print "This page [%d] could be skipped just now!" % i
-        print "Re open again.\n"
-        inputPage(driver, i)
+        print "Re open again."
+        inputPage(driver, i, count)
         bf = getBf(driver)
-        pageList = getPages(bf, pageList, docType, count)
+        pageList = getPages(bf, pageList, docType, count, i)
         page = pageList[i-1]
       if not page:
-        print "This page [%d] truly is lost.\n" % i
+        print "This page [%d] truly is lost." % i
         page = ""
       else:
         #url = hp.unescape(url)
@@ -243,7 +270,7 @@ def main(driver, url):
         c.showPage()
         im.close()
         im1.close()
-      i = i + 1
+      i += 1
     c.save()
     return f_pdf
 
@@ -252,17 +279,19 @@ if __name__ == "__main__":
   #  print "Usage: %s <url>\n" % os.path.basename(sys.argv[0])
   #  exit(1)
   success = True
-  print "Please input the URL:\n"
-  url = sys.stdin.readline()
-  url = url[:-1]
+  #print "Please input the URL:"
+  #url = sys.stdin.readline()
+  #url = url[:-1]
   docname = ""
-  # url = 'https://wenku.baidu.com/view/aa31a84bcf84b9d528ea7a2c.html'
-  # url = 'https://wenku.baidu.com/view/590424de846a561252d380eb6294dd88d0d23d0b.html'
+  url = 'https://wenku.baidu.com/view/aa31a84bcf84b9d528ea7a2c.html'  # doc
+  # url = 'https://wenku.baidu.com/view/590424de846a561252d380eb6294dd88d0d23d0b.html'  # pdf
+  # url = 'https://wenku.baidu.com/view/a6d77180bcd126fff7050bff.html'  # ppt
+  print "Opening browser..."
   driver = init_driver()
   try:
     #main(driver, sys.argv[1])
     docname = main(driver, url)
-  except Exception, e:
+  except:
     success = False
     raise
   finally:
@@ -271,4 +300,4 @@ if __name__ == "__main__":
     if os.path.isfile(errfile):
       os.remove(errfile)
     print "Get Baidu Doc '%s' %s!\n" %(docname, "successfully" if success else "failed")
-    os.system("pause")
+    #os.system("pause")

@@ -16,6 +16,11 @@
 
 <div class="centerLeft"><div class="reader-tools-page xllDownloadLayerHit_left"><input type="text" class="page-input" data-toolsbar-log="jumppage"><span class="page-count">/15</span><
 
+<div id="reader-container" class="reader-container" style="width: 964px;">
+<div id="ppt-wrap" style="display: block;"><div class="mod ppt-mod">
+    <div js-hook="content" class="bd ppt-bd"><img src="https://wkretype.bdimg.com/retype/zoom/ec8ca61c4a7302768e993989?pn=3&amp;o=jpg_6&amp;md5sum=8a209f37152824caa156ee3de796fa7b&amp;sign=512cf9d514&amp;png=276459-360366&amp;jpg=234251-424218" style="width: 932px; height: 524px; opacity: 1;"></div>
+
+
 
     
     
